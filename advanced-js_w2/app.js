@@ -37,7 +37,7 @@ categorias.add("Escuela") // no se duplica
 
 // Module
 
-import { saludar } from './data.js'
+import { saludar } from '../data.js'
 
 //saludar("José")
 
