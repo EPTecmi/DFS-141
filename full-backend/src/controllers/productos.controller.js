@@ -6,6 +6,10 @@ function getAll(req, res) {
   return res.json(repo.getAll())
 }
 
+function getAllVisible(req, res) {
+  return res.json(repo.getAllActive())
+}
+
 function getById(req, res) {
   const id = Number(req.params.id)
   const producto = repo.getById(id)

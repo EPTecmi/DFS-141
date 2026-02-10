@@ -8,6 +8,10 @@ class ProductosRepository {
     return this.productos;
   }
 
+  getAllActive() {
+    return this.productos.filter(producto => producto.active);
+  }
+
   getById(id) {
     return this.productos.find(producto => producto.id === id);
   }
