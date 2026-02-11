@@ -2,17 +2,20 @@ const { ProductosRepository } = require('../repositories/productos.repository');
 
 const repo = new ProductosRepository();
 
-function getAll(req, res) {
-  return res.json(repo.getAll())
+async function getAll(req, res) {
+  const productos = await repo.getAll();
+  console.log(productos)
+  return res.json(productos)
 }
 
-function getAllVisible(req, res) {
-  return res.json(repo.getAllActive())
+async function getAllVisible(req, res) {
+  const productos = await repo.getAllActive()
+  return res.json(productos)
 }
 
-function getById(req, res) {
+async function getById(req, res) {
   const id = Number(req.params.id)
-  const producto = repo.getById(id)
+  const producto = await repo.getById(id)
 
   if (!producto) {
     return res.status(404).json({error: 'Producto no encontrado'})
@@ -21,7 +24,7 @@ function getById(req, res) {
   return res.json(producto)
 }
 
-function create(req, res) {
+async function create(req, res) {
   const { nombre, precio } = req.body;
 
   if (!nombre || typeof nombre !== 'string') {
@@ -33,7 +36,7 @@ function create(req, res) {
     return res.status(400).json({error: 'Precio inválido'})
   }
 
-  const nuevo = repo.create(nombre, precioNumber )
+  const nuevo = await repo.create(nombre, precioNumber)
   return res.status(201).json(nuevo)
 }
 
@@ -59,4 +62,4 @@ function remove(req, res) {
   return res.status(204).send()
 }
 
-module.exports = { getAll, getById, create, update, remove }
+module.exports = { getAll, getAllVisible, getById, create, update, remove }
