@@ -26,4 +26,5 @@ app.get('/health/db', async (req, res) => {
   }
 })
 
-
+const { errorHandler } = require('./src/middlewares/error.middleware');
+app.use(errorHandler);

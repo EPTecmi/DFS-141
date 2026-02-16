@@ -25,6 +25,13 @@ class ProductosRepository {
     // return this.productos.find(producto => producto.id === id);
   }
 
+  async buscar(data) {
+    const result = await pool.query(
+      'select id, nombre, precio from productos where nombre like coalesce($1, nombre) or precio = coalesce($2, precio) and activo = true',[`%${data.nombre}%`, data.precio]
+    )
+    return result.rows;
+  }
+
   async create(nombre, precio) {
     const result = await pool.query(
       'insert into productos (nombre, precio) values ($1,$2) returning id, nombre, precio;',[nombre, precio] 
@@ -34,22 +41,24 @@ class ProductosRepository {
     // this.productos.push(newProducto);
     // return newProducto;
   }
-  update(id, data) {
-    const producto = this.getById(id);
-    if (producto) {
-      producto.nombre = data.nombre;
-      producto.precio = data.precio;
-      return producto;
-    }
-    return null;
+  async update(id, data) {
+    const result = await pool.query(
+      'update productos set nombre = coalesce($1, nombre), precio = coalesce($2, precio) where id = $3 returning id, nombre, precio',
+      [
+        data.nombre ?? null,
+        data.precio ?? null,
+        id
+      ]
+    );
+    return result.rows[0] || null;
   }
 
-  delete(id) {
-    const index = this.productos.findIndex(producto => producto.id === id);
-    if (index !== -1) {
-      return this.productos.splice(index, 1)[0];
-    }
-    return null;
+  async delete(id) {
+    const result = await pool.query(
+      'delete from productos where id = $1 returning id', [id]
+    )
+
+    return result.rows[0] || null;
   }
 }
 
