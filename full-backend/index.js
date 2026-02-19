@@ -1,15 +1,43 @@
-const express = require('express')
-const {pool} = require('./src/db')
+const express = require('express');
+const cors = require('cors');
+const { pool } = require('./src/db');
+const { sign, authMiddleware } = require('./src/auth');
 const { router: productosRouter } = require('./src/routes/productos.routes')
+
+const PORT = process.env.PORT || 3000
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 app.get('/', (req, res) => {
   res.send('API OK');
 })
 app.use('/productos', productosRouter);
-app.listen(3000, () => {
-  console.log("Servidor Corriendo")
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+  
+
+  if (email !== 'admin@test.com' || password !== '1234') {
+    return res.status(401).json({ error: 'Credenciales incorrectas' });
+  }
+
+  const token = sign({ email, role: 'admin' });
+
+  return res.json({ token });
+});
+
+app.get('/privado', authMiddleware, (req, res) => {
+  return res.json({
+    ok: true,
+    user: req.user
+  })
+});
+
+
+app.listen(PORT, () => {
+  console.log(`Servidor Corriendo en http://localhost:${PORT}`)
 })
 
 app.get('/health', (req, res) => {
