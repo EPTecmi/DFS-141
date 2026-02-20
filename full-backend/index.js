@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const { pool } = require('./src/db');
 const { sign, authMiddleware } = require('./src/auth');
-const { router: productosRouter } = require('./src/routes/productos.routes')
+const { router: productosRouter } = require('./src/routes/productos.routes');
+const { router: usersRouter } = require('./src/routes/users.routes');
 
 const PORT = process.env.PORT || 3000
 const app = express()
@@ -13,20 +14,8 @@ app.get('/', (req, res) => {
   res.send('API OK');
 })
 app.use('/productos', productosRouter);
+app.use('/users', usersRouter);
 
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  
-
-  if (email !== 'admin@test.com' || password !== '1234') {
-    return res.status(401).json({ error: 'Credenciales incorrectas' });
-  }
-
-  const token = sign({ email, role: 'admin' });
-
-  return res.json({ token });
-});
 
 app.get('/privado', authMiddleware, (req, res) => {
   return res.json({
