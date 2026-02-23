@@ -8,7 +8,19 @@ const { router: usersRouter } = require('./src/routes/users.routes');
 const PORT = process.env.PORT || 3000
 const app = express()
 
-app.use(cors())
+const allowed = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+];
+
+app.use(cors({
+  origin: function (origin, cb) {
+    if (!origin) return cb(null, true); // Postman
+    if (allowed.includes(origin)) return cb(null, true);
+    return cb(new Error('CORS bloqueado: ' + origin));
+  }
+}));
+
 app.use(express.json())
 app.get('/', (req, res) => {
   res.send('API OK');
@@ -26,7 +38,7 @@ app.get('/privado', authMiddleware, (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Servidor Corriendo en http://localhost:${PORT}`)
+  console.log(`Servidor Corriendo en el puerto ${PORT}`)
 })
 
 app.get('/health', (req, res) => {
